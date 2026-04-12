@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE `product` ADD COLUMN `inStock` BOOLEAN NOT NULL DEFAULT true,
+    MODIFY `tags` VARCHAR(191) NOT NULL DEFAULT 'all';
+
+-- CreateTable
+CREATE TABLE `order` (
+    `_id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `orderDetails` VARCHAR(191) NOT NULL,
+    `status` ENUM('PENDING', 'COMPLETED') NOT NULL DEFAULT 'PENDING',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

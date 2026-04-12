@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  AGENT
+  USER
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum TempleType {
+  HINDU
+  BUDDHIST
+  SACRED
+}
+
+model User {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  bookings  Booking[]
+  reviews   Review[]
+}
+
+model Temple {
+  id          String     @id @default(cuid()) @map("_id")
+  name        String
+  slug        String     @unique
+  description String
+  history     String?
+  significance String?   @map("religious_significance")
+  type        TempleType @default(HINDU)
+  address     String
+  city        String
+  district    String
+  region      String
+  latitude    Float?
+  longitude   Float?
+  images      String[]
+  mainDeity   String?
+  establishedYear Int?
+  phone       String?
+  website     String?
+  openingHours String?
+  entryFee    Float?
+  amenities   String[]
+  isFeatured  Boolean    @default(false)
+  isVerified  Boolean    @default(false)
+  rating      Float      @default(0)
+  reviewCount Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  packages   Package[]
+  reviews    Review[]
+}
+
+model Package {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  slug        String   @unique
+  description String
+  duration   String
+  itinerary   String[]
+  includes    String[]
+  excludes    String[]
+  price       Float
+  discountPrice Float?
+  maxPeople   Int      @default(1)
+  minPeople   Int      @default(1)
+  templeId    String
+  temple      Temple   @relation(fields: [templeId], references: [id])
+  category    String
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  bookings   Booking[]
+}
+
+model Booking {
+  id             String         @id @default(cuid()) @map("_id")
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  packageId       String
+  package         Package        @relation(fields: [packageId], references: [id])
+  travelDate     DateTime
+  passengers    Int            @default(1)
+  guestName     String
+  guestEmail    String
+  guestPhone    String
+  specialRequests String?
+  totalAmount   Float
+  status       BookingStatus  @default(PENDING)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Review {
+  id       String   @id @default(cuid()) @map("_id")
+  rating   Int
+  comment  String?
+  userId   String
+  user     User    @relation(fields: [userId], references: [id])
+  templeId String
+  temple   Temple  @relation(fields: [templeId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
