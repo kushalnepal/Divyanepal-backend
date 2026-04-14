@@ -12,6 +12,7 @@ const cors = require("cors");
 const allowedOrigins = [
   "https://farm-fresh-order-hub.vercel.app",
   "https://divyanepal-frontend.vercel.app",
+  "https://divya-nepal-frontend-*.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:8080",
@@ -26,10 +27,21 @@ app.use(
     ) {
       // Allow requests with no origin (like mobile apps or curl requests)
       // Also allow if origin is in the allowedOrigins list
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"), false);
+        const isAllowed = allowedOrigins.some((allowed) => {
+          if (allowed.includes("*")) {
+            const regex = new RegExp("^" + allowed.replace("*", ".*") + "$");
+            return regex.test(origin);
+          }
+          return allowed === origin;
+        });
+        if (isAllowed) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"), false);
+        }
       }
     },
     credentials: true,
