@@ -2,7 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { errormiddleware } from "./features/Middleware/errors";
 import mainRouter from "./features/routes";
-import { Port } from "./secret";
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 const cors = require("cors");
@@ -10,9 +11,11 @@ const cors = require("cors");
 // Allow requests from the Vercel frontend and localhost for development
 const allowedOrigins = [
   "https://farm-fresh-order-hub.vercel.app",
+  "https://divyanepal-frontend.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:8080",
+  "https://divyanepal-backend-production.up.railway.app",
 ];
 
 app.use(
@@ -67,4 +70,4 @@ const startServer = (port: number, attempts = 3) => {
   });
 };
 
-startServer(Port);
+startServer(PORT);
